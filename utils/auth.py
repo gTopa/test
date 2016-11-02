@@ -2,20 +2,21 @@ import hashlib, sqlite3
 
 
 def addUser(user, password):
-    db=sqlite3.connect('../data/tables.db')
+    db=sqlite3.connect('data/tables.db')
     c=db.cursor()
     myHashObj=hashlib.sha1()
     myHashObj.update(password)
-    q='SELECT username FROM users'
-    if(user in c.execute(q)):
-        return False
-    q='SELECT userID FROM users'
+    q='SELECT * FROM users'
+    for users in c.execute(q):
+        if (users[1]==user):
+            return False
+        
     q='INSERT INTO users ('+str(c.execute(q)[len(c.execute(q))-1]+1)+', '+user+', '+myHashObj.hexdigest()+');'
     c.execute(q)
     return True
 
-def userLogin(user, password)
-    db=sqlite3.connect('../data/tables.db')
+def userLogin(user, password):
+    db=sqlite3.connect('data/tables.db')
     c=db.cursor()
     myHashObj=hashlib.sha1()
     myHashObj.update(password)
