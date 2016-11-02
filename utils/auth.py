@@ -4,7 +4,6 @@ import hashlib, sqlite3
 def addUser(user, password):
     db=sqlite3.connect('data/tables.db')
     c=db.cursor()
-    d=db.cursor()
     myHashObj=hashlib.sha1()
     myHashObj.update(password)
     q='SELECT * FROM users'
@@ -12,10 +11,13 @@ def addUser(user, password):
     userInfo=c.fetchall()
     for data in userInfo:
         if (user in data):
+            db.close()
             return False
-    q='INSERT INTO users(userID, username, password) VALUES("'+str(userInfo[len(userInfo)-1][0]+1)+'", "'+user+'", "'+myHashObj.hexdigest()+'");'
+    q='INSERT INTO users VALUES ("'+str(userInfo[len(userInfo)-1][0]+1)+'", "'+user+'", "'+myHashObj.hexdigest()+'")'
     print q
-    d.execute(q)
+    c.execute(q)
+    db.commit()
+    db.close()
     return True
 
 def userLogin(user, password):
@@ -31,6 +33,8 @@ def userLogin(user, password):
             q='SELECT password FROM users WHERE username = "'+user+'";'
             c.execute(q)
             password=c.fetchall()
+            db.close()
             if(myHashObj.hexdigest()==password[0][0]):
                 return True
+    db.close()
     return False
